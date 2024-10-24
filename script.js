@@ -6,20 +6,50 @@ function GameBoard() {
   for (let i = 0; i < rows; i++) {
     board[i] = [];
     for (let j = 0; j < columns; j++) {
-      board[i].push(0);
+      board[i].push(Cell().getValue());
     }
   }
 
-  function getBoard() {
+  const getBoard = () => {
     return board;
+    1;
+  };
+
+  function isCellNotAvailable() {
+    for (let i = 0; i < rows; i++) {
+      board[i];
+      for (let j = 0; j < columns; j++) {
+        if (board[j] !== 0) {
+          console.log("Announce winner");
+        }
+      }
+    }
   }
+
+  function winningCondition() {}
 
   function updateBoard(row, col, value) {
-    if (row <= rows && col <= columns) {
+    const emptyCell = board[row - 1][col - 1]; // Accès direct à la cellule
+    if (emptyCell === 0 && row <= rows && col <= columns) {
+      // Cell is empty
       board[row - 1][col - 1] = value;
+    } else {
+      console.log("Not available");
     }
   }
-  return { getBoard, updateBoard };
+  return { getBoard, updateBoard, isCellNotAvailable, winningCondition };
+}
+
+function Cell() {
+  let value = 0;
+
+  const addToken = (player) => {
+    value = player;
+  };
+
+  const getValue = () => value;
+
+  return { addToken, getValue };
 }
 
 function playersControl(
@@ -37,24 +67,36 @@ function playersControl(
     },
   ];
 
-  let getActivePlayer = () => player[0];
+  let activePlayer = player[0];
 
   const switchPlayerTurn = () =>
-    (getActivePlayer = getActivePlayer === player[0] ? player[1] : player[0]);
+    (activePlayer = activePlayer === player[0] ? player[1] : player[0]);
 
-  let choiceRow = prompt(
-    `${getActivePlayer().name} Please input your row choice :`,
-    "(between 1 and 3)"
-  );
+  const getActivePlayer = () => activePlayer;
 
-  let choiceColumn = prompt(
-    `${getActivePlayer().name} Please input your column choice :`,
-    "(between 1 and 3)"
-  );
+  console.log(activePlayer);
 
-  myGameBoard.updateBoard(choiceRow, choiceColumn, getActivePlayer().token);
+  let numberTurnTest = 5;
 
-  switchPlayerTurn();
+  if (myGameBoard.isCellNotAvailable) {
+    for (let i = 0; i < numberTurnTest; i++) {
+      let choiceRow = prompt(
+        `${getActivePlayer().name} Please input your row choice :`,
+        "(between 1 and 3)"
+      );
+
+      let choiceColumn = prompt(
+        `${getActivePlayer().name} Please input your column choice :`,
+        "(between 1 and 3)"
+      );
+
+      myGameBoard.updateBoard(choiceRow, choiceColumn, getActivePlayer().token);
+
+      switchPlayerTurn();
+    }
+  }
+
+  console.log(getActivePlayer());
 }
 
 // let choiceRow = prompt("Please input your row choice :", "(between 1 and 3)");
@@ -68,11 +110,5 @@ function playersControl(
 
 const myGameBoard = GameBoard();
 const board = myGameBoard.getBoard();
-playersControl();
-
-playersControl();
-
-playersControl();
-
 playersControl();
 console.log(board);
