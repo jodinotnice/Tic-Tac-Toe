@@ -12,21 +12,34 @@ function GameBoard() {
 
   const getBoard = () => {
     return board;
-    1;
   };
 
-  function isCellNotAvailable() {
+  function isCellNotAvailable() {}
+
+  function winningCondition(token, name) {
     for (let i = 0; i < rows; i++) {
-      board[i];
-      for (let j = 0; j < columns; j++) {
-        if (board[j] !== 0) {
-          console.log("Announce winner");
-        }
+      if (board[i].every((cell) => cell === token)) {
+        return console.log(`${name} has won`);
       }
     }
-  }
 
-  function winningCondition() {}
+    for (let j = 0; j < columns; j++) {
+      const column = [board[0][j], board[1][j], board[2][j]];
+      if (column.every((cell) => cell === token)) {
+        return console.log(`${name} has won`);
+      }
+    }
+
+    if (
+      ([board[0][0], board[1][1], board[2][2]].every(
+        (cell) => cell === token
+      ) || board[2][0],
+      [board[1][1], board[0][2]].every((cell) => cell === token))
+    ) {
+      return console.log(`${name} has won`);
+    }
+    return console.log("It's a tie !");
+  }
 
   function updateBoard(row, col, value) {
     const emptyCell = board[row - 1][col - 1]; // Accès direct à la cellule
@@ -34,7 +47,7 @@ function GameBoard() {
       // Cell is empty
       board[row - 1][col - 1] = value;
     } else {
-      console.log("Not available");
+      return;
     }
   }
   return { getBoard, updateBoard, isCellNotAvailable, winningCondition };
@@ -73,10 +86,9 @@ function playersControl(
     (activePlayer = activePlayer === player[0] ? player[1] : player[0]);
 
   const getActivePlayer = () => activePlayer;
+  console.log(getActivePlayer());
 
-  console.log(activePlayer);
-
-  let numberTurnTest = 5;
+  let numberTurnTest = 10;
 
   if (myGameBoard.isCellNotAvailable) {
     for (let i = 0; i < numberTurnTest; i++) {
@@ -92,21 +104,17 @@ function playersControl(
 
       myGameBoard.updateBoard(choiceRow, choiceColumn, getActivePlayer().token);
 
+      myGameBoard.winningCondition(
+        getActivePlayer().token,
+        getActivePlayer().name
+      );
       switchPlayerTurn();
     }
   }
 
   console.log(getActivePlayer());
+  return { getActivePlayer };
 }
-
-// let choiceRow = prompt("Please input your row choice :", "(between 1 and 3)");
-
-// let choiceColumn = prompt(
-//   "Please input your column choice :",
-//   "(between 1 and 3)"
-// );
-
-// board[choiceRow - 1].splice(choiceColumn - 1, 1, "X");
 
 const myGameBoard = GameBoard();
 const board = myGameBoard.getBoard();
