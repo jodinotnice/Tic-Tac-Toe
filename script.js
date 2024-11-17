@@ -1,3 +1,5 @@
+"use strict";
+
 function GameBoard() {
   const rows = 3;
   const columns = 3;
@@ -14,31 +16,43 @@ function GameBoard() {
     return board;
   };
 
-  function isCellNotAvailable() {}
+  console.log(getBoard());
 
-  function winningCondition(token, name) {
-    for (let i = 0; i < rows; i++) {
-      if (board[i].every((cell) => cell === token)) {
-        return console.log(`${name} has won`);
+  function isGamingBoardFull() {
+    return board.every((element) => !element.includes(0));
+  }
+
+  console.log(isGamingBoardFull());
+
+  function winningCondition(token, name, status) {
+    if (!status) {
+      for (let i = 0; i < rows; i++) {
+        const row = [board[i][0], board[i][1], board[i][2]];
+        if (row.every((cell) => cell === token)) {
+          return "win";
+        }
       }
-    }
 
-    for (let j = 0; j < columns; j++) {
-      const column = [board[0][j], board[1][j], board[2][j]];
-      if (column.every((cell) => cell === token)) {
-        return console.log(`${name} has won`);
+      for (let j = 0; j < columns; j++) {
+        const column = [board[0][j], board[1][j], board[2][j]];
+        if (column.every((cell) => cell === token)) {
+          return "win";
+        }
       }
-    }
 
-    if (
-      ([board[0][0], board[1][1], board[2][2]].every(
-        (cell) => cell === token
-      ) || board[2][0],
-      [board[1][1], board[0][2]].every((cell) => cell === token))
-    ) {
-      return console.log(`${name} has won`);
+      if (
+        [board[0][0], board[1][1], board[2][2]].every(
+          (cell) => cell === token
+        ) ||
+        [board[2][0], board[1][1], board[0][2]].every((cell) => cell === token)
+      ) {
+        return "win";
+      } else {
+        return "continue";
+      }
+    } else if (status) {
+      return "tie";
     }
-    return console.log("It's a tie !");
   }
 
   function updateBoard(row, col, value) {
@@ -50,7 +64,7 @@ function GameBoard() {
       return;
     }
   }
-  return { getBoard, updateBoard, isCellNotAvailable, winningCondition };
+  return { getBoard, updateBoard, winningCondition, isGamingBoardFull };
 }
 
 function Cell() {
@@ -88,27 +102,44 @@ function playersControl(
   const getActivePlayer = () => activePlayer;
   console.log(getActivePlayer());
 
-  let numberTurnTest = 10;
+  let gameStatus = true;
 
-  if (myGameBoard.isCellNotAvailable) {
-    for (let i = 0; i < numberTurnTest; i++) {
-      let choiceRow = prompt(
-        `${getActivePlayer().name} Please input your row choice :`,
-        "(between 1 and 3)"
-      );
+  while (gameStatus) {
+    let choiceRow = prompt(
+      `${getActivePlayer().name} Please input your row choice :`,
+      "(between 1 and 3)"
+    );
 
-      let choiceColumn = prompt(
-        `${getActivePlayer().name} Please input your column choice :`,
-        "(between 1 and 3)"
-      );
+    let choiceColumn = prompt(
+      `${getActivePlayer().name} Please input your column choice :`,
+      "(between 1 and 3)"
+    );
 
-      myGameBoard.updateBoard(choiceRow, choiceColumn, getActivePlayer().token);
+    myGameBoard.updateBoard(choiceRow, choiceColumn, getActivePlayer().token);
 
+    const winningStatus = () =>
       myGameBoard.winningCondition(
         getActivePlayer().token,
-        getActivePlayer().name
+        getActivePlayer().name,
+        myGameBoard.isGamingBoardFull()
       );
-      switchPlayerTurn();
+    console.log(winningStatus());
+
+    switch (winningStatus()) {
+      case "continue":
+        console.log("winningStatus");
+        switchPlayerTurn();
+        break;
+      case "win":
+        gameStatus = false;
+        console.log(`${getActivePlayer().name} has won`);
+        console.log(winningStatus());
+        break;
+      case "tie":
+        gameStatus = false;
+        console.log("It's a tie");
+        console.log(winningStatus());
+        break;
     }
   }
 
